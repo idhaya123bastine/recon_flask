@@ -16,12 +16,10 @@ import pdfplumber
 import pandas as pd
 from collections import namedtuple
 from openpyxl import Workbook, load_workbook
-import numpy as np
+
 import xlsxwriter
 import csv
-import tkinter as tk
-from tkinter.constants import END, NO
-from tkinter import filedialog, messagebox, ttk
+
 global upi_match_length, upi_unmatch_length, card_match_length, card_unmatch_length
 import os
 
