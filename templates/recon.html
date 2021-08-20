@@ -49,8 +49,8 @@
 
     </div>
     <div class="recon-box3">
-     <h5 ass="box-heading">Finance Department</h5>
-        <a href="{{  url_for('download_file') }}">Download</a>
+     <h5  ass="box-heading">Finance Department</h5>
+        {{ wtf.quick_form(downloads, novalidate=True, button_map={"submit": "primary"}) }}
         <br/>
         <a href="{{  url_for('logout') }}">Log out</a>
     </div>

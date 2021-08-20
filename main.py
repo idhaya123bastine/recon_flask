@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, abort, request, send_from_directory
+from flask import Flask, render_template, redirect, url_for, flash, abort, request,send_file
 from flask_bootstrap import Bootstrap
 from pathlib import Path
 import re
@@ -52,6 +52,11 @@ class reconciliationForm(FlaskForm):
     upiFile = FileField("UPI Statement", validators=[DataRequired()])
     cardFile = FileField("Card Statement", validators=[DataRequired()])
     submit = SubmitField("Reconcilation")
+
+
+class downloadForm(FlaskForm):
+    downloaad = SubmitField("Download")
+
 
 class loginForm(FlaskForm):
     pin = StringField("Enter Your Pin", validators=[DataRequired()])
@@ -563,9 +568,9 @@ def login():
     return render_template('login page.html', forms=login)
 @app.route("/recon", methods=["GET", "POST"])
 def hello_world():
-    global filename1, filename2, filename3
-    file_creation(code);
+    global filename1, filename2, filename3, paths
     forms = reconciliationForm()
+    downloadFo = downloadForm()
     if forms.validate_on_submit():
         print(forms.bankFile.data)
         print(forms.upiFile.data)
@@ -577,26 +582,35 @@ def hello_world():
         converting_card()
         converting_upi()
         return redirect(url_for('flask_reconcilation'))
-    return render_template('recon.html', forms=forms)
+    if downloadFo.validate_on_submit():
+        return redirect(url_for('life_file'))
+    return render_template('recon.html', forms=forms, downloads=downloadFo)
 
 @app.route("/reconciling",methods=["GET","POST"])
 def flask_reconcilation():
     summary_check()
 
     return redirect(url_for('hello_world'))
-@app.route("/download",methods=["GET","POST"])
-def download_file():
-    global paths
-    try:
-        file = pd.read_excel(paths + '/Reconcilation Summary.xlsx', header=None)  # checking if this file exsist or not'
-        full_path = paths
+
+@app.route("/relax", methods=["GET"])
+def life_file():
+    global paths,code
+
+    full_path = paths + '/Reconcilation Summary.xlsx'
+    print(paths)
+    if not os.path.exists(full_path):
+        openFile = False;
+    else:
+        openFile = True;
+
+    if(openFile == True):
+
         print(full_path)
-        return send_from_directory(full_path,  'Reconcilation Summary.xlsx')
-    except FileNotFoundError:
-        openFile = False
+        return send_file(full_path, as_attachment=True)
+    else:
+        print('hello')
+        return redirect(url_for('hello_world'))
 
-
-    return redirect(url_for('hello_world'))
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=3000)
