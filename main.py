@@ -569,6 +569,7 @@ def login():
 @app.route("/recon", methods=["GET", "POST"])
 def hello_world():
     global filename1, filename2, filename3, paths
+    file_creation(code);
     forms = reconciliationForm()
     downloadFo = downloadForm()
     if forms.validate_on_submit():
