@@ -574,7 +574,7 @@ def login():
     return render_template('login page.html', forms=login)
 @app.route("/recon", methods=["GET", "POST"])
 def hello_world():
-    global filename1, filename2, filename3, paths
+    global filename1, filename2, filename3, paths, code
     file_creation(code);
     forms = reconciliationForm()
     downloadFo = downloadForm()
