@@ -57,6 +57,12 @@ class reconciliationForm(FlaskForm):
 class downloadForm(FlaskForm):
     downloaad = SubmitField("Download")
 
+class clearForm(FlaskForm):
+    clear = SubmitField("Clear History")
+
+class confirmForm(FlaskForm):
+    confirm = SubmitField("click to clear")
+
 
 class loginForm(FlaskForm):
     pin = StringField("Enter Your Pin", validators=[DataRequired()])
@@ -323,7 +329,7 @@ def clear_history():
     os.remove(paths + '/upi_unmatching.csv')
     os.remove(paths + '/FULL_SUMMARY.csv')
     os.remove(paths + '/Reconcilation Summary.xlsx')
-    os.remove(paths + '/recon_stats.csv')
+    #os.remove(paths + '/recon_stats.csv')
 
 
 def delete_failed():
@@ -572,6 +578,7 @@ def hello_world():
     file_creation(code);
     forms = reconciliationForm()
     downloadFo = downloadForm()
+    confirm = clearForm()
     if forms.validate_on_submit():
         print(forms.bankFile.data)
         print(forms.upiFile.data)
@@ -582,10 +589,12 @@ def hello_world():
         loading_files()
         converting_card()
         converting_upi()
-        return redirect(url_for('flask_reconcilation'))
+        return redirect(url_for('flask_reconcilation'));
     if downloadFo.validate_on_submit():
-        return redirect(url_for('life_file'))
-    return render_template('recon.html', forms=forms, downloads=downloadFo)
+        return redirect(url_for('life_file'));
+    if confirm.validate_on_submit():
+        return redirect(url_for('life_safer'));
+    return render_template('recon.html', forms=forms, downloads=downloadFo, confirms=confirm)
 
 @app.route("/reconciling",methods=["GET","POST"])
 def flask_reconcilation():
@@ -609,7 +618,21 @@ def life_file():
         print(full_path)
         return send_file(full_path, as_attachment=True)
     else:
-        print('hello')
+        flash('Folder Empty')
+        return redirect(url_for('hello_world'))
+
+@app.route("/clear", methods=["GET"])
+def life_safer():
+    global paths, code
+
+    full_path = paths + '/Reconcilation Summary.xlsx'
+    print('hello');
+    if os.path.exists(full_path):
+        clear_history()
+        flash('History Cleared')
+        return redirect(url_for('hello_world'))
+    else:
+        flash('Folder Empty')
         return redirect(url_for('hello_world'))
 
 
